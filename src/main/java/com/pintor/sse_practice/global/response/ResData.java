@@ -2,6 +2,7 @@ package com.pintor.sse_practice.global.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.pintor.sse_practice.global.util.AppConfig;
 import lombok.Getter;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;

@@ -1,7 +1,7 @@
 package com.pintor.sse_practice.global.response;
 
-import com.cojar.whats_hot_backend.global.util.AppConfig;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.pintor.sse_practice.global.util.AppConfig;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
