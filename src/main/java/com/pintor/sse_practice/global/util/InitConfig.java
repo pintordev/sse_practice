@@ -22,8 +22,6 @@ public class InitConfig {
     public ApplicationRunner runner() {
         return args -> {
 
-
-
         };
     }
 }
