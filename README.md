@@ -7,6 +7,7 @@
 
 ## 24-01-30
 - [x] #6 - global/errors 추가
+- [x] #7 - BaseControllerTest 추가
 
 ## 24-01-29
 - [x] #4 - global/response 추가
