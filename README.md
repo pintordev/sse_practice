@@ -5,6 +5,9 @@
 >- **연습용 리포지터리**
 >- **단순 게시판 + 알림기능 추가**
 
+## 24-01-31
+- [x] #8 - post:/api/members - S-01-01 TC
+
 ## 24-01-30
 - [x] #6 - global/errors 추가
 - [x] #7 - BaseControllerTest 추가
