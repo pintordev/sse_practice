@@ -41,6 +41,8 @@ public class MemberService {
     @Transactional
     public Member signup(MemberRequest.SignUp request, Errors errors) {
 
+        this.signupValidate(request, errors);
+
         Member member = Member.builder()
                 .username(request.getUsername())
                 .password(this.passwordEncoder.encode(request.getPassword()))
@@ -50,6 +52,19 @@ public class MemberService {
         this.memberRepository.save(member);
 
         return this.refresh(member);
+    }
+
+    private void signupValidate(MemberRequest.SignUp request, Errors errors) {
+
+        if (errors.hasErrors()) {
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_01_01_01,
+                            errors
+                    )
+            );
+        }
     }
 
     public Member getMemberById(Long id) {

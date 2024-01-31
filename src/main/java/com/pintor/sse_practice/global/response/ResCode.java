@@ -18,6 +18,8 @@ public enum ResCode {
     S_03_01(HttpStatus.CREATED, "S-03-01", "댓글 등록이 완료되었습니다"),
 
     // member controller fail code
+    F_01_01_01(HttpStatus.BAD_REQUEST, "F-01-01-01", "요청 값이 올바르지 않습니다"),
+
     F_01_03_01(HttpStatus.NOT_FOUND, "F-01-03-01", "해당 회원을 찾을 수 없습니다"),
 
     // board controller fail code
