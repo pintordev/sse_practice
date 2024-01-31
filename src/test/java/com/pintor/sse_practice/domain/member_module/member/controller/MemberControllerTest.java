@@ -72,7 +72,7 @@ class MemberControllerTest extends BaseControllerTest {
 
     @ParameterizedTest
     @MethodSource("argsFor_signup_BadRequest_NotBlank")
-    @DisplayName("post:/api/members - bad request, F-01-01-01")
+    @DisplayName("post:/api/members - bad request not blank, F-01-01-01")
     public void signup_BadRequest_NotBlank(String username, String password, String passwordConfirm) throws Exception {
 
         // given
@@ -126,5 +126,48 @@ class MemberControllerTest extends BaseControllerTest {
                         argumentsBuilder.add(Arguments.of(username, password, passwordConfirm));
 
         return argumentsBuilder.build();
+    }
+
+    @Test
+    @DisplayName("post:/api/members - bad request username already exist, F-01-01-02")
+    public void signup_BadRequest_UsernameAlreadyExist() throws Exception {
+
+        // given
+        long count = this.memberService.count();
+
+        String username = "user1";
+        String password = "1234";
+        String passwordConfirm = "1234";
+        MemberRequest.SignUp request = MemberRequest.SignUp.builder()
+                .username(username)
+                .password(password)
+                .passwordConfirm(passwordConfirm)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("status").value("BAD_REQUEST"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-01-01-02"))
+                .andExpect(jsonPath("message").value(ResCode.F_01_01_02.getMessage()))
+                .andExpect(jsonPath("data[0].field").value("username"))
+                .andExpect(jsonPath("data[0].objectName").exists())
+                .andExpect(jsonPath("data[0].code").value("already exist"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("username already exists"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(username))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+
+        assertThrows(ApiResponseException.class, () -> this.memberService.getMemberById(count + 1));
     }
 }

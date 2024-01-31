@@ -39,14 +39,14 @@ public class MemberService {
     }
 
     @Transactional
-    public Member signup(MemberRequest.SignUp request, Errors errors) {
+    public Member signup(MemberRequest.SignUp request, boolean isAdmin, Errors errors) {
 
         this.signupValidate(request, errors);
 
         Member member = Member.builder()
                 .username(request.getUsername())
                 .password(this.passwordEncoder.encode(request.getPassword()))
-                .authorities(List.of(MemberRole.USER))
+                .authorities(isAdmin ? List.of(MemberRole.ADMIN, MemberRole.USER): List.of(MemberRole.USER))
                 .build();
 
         this.memberRepository.save(member);
@@ -61,6 +61,18 @@ public class MemberService {
             throw new ApiResponseException(
                     ResData.of(
                             ResCode.F_01_01_01,
+                            errors
+                    )
+            );
+        }
+
+        if (this.memberRepository.existsByUsername(request.getUsername())) {
+
+            errors.rejectValue("username", "already exist", "username already exists");
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_01_01_02,
                             errors
                     )
             );

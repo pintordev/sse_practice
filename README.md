@@ -8,6 +8,7 @@
 ## 24-01-31
 - [x] #8 - post:/api/members - S-01-01 TC
 - [x] #9 - post:/api/members - F-01-01-01 TC
+- [x] #10 - post:/api/members - F-01-01-02 TC
 
 ## 24-01-30
 - [x] #6 - global/errors 추가

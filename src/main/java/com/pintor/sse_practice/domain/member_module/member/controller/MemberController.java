@@ -32,7 +32,7 @@ public class MemberController {
     @PostMapping
     public ResponseEntity signup(@Valid @RequestBody MemberRequest.SignUp request, Errors errors) {
 
-        Member member = this.memberService.signup(request, errors);
+        Member member = this.memberService.signup(request, false, errors);
 
         ResData resData = ResData.of(
                 ResCode.S_01_01,
