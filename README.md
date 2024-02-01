@@ -5,6 +5,9 @@
 >- **연습용 리포지터리**
 >- **단순 게시판 + 알림기능 추가**
 
+## 24-02-01
+- [x] #11 - post:/api/members - F-01-01-03 TC
+
 ## 24-01-31
 - [x] #8 - post:/api/members - S-01-01 TC
 - [x] #9 - post:/api/members - F-01-01-01 TC

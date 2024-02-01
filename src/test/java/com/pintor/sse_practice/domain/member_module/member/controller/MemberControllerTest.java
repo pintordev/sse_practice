@@ -170,4 +170,47 @@ class MemberControllerTest extends BaseControllerTest {
 
         assertThrows(ApiResponseException.class, () -> this.memberService.getMemberById(count + 1));
     }
+
+    @Test
+    @DisplayName("post:/api/members - bad request password not matched, F-01-01-03")
+    public void signup_BadRequest_PasswordNotMatched() throws Exception {
+
+        // given
+        long count = this.memberService.count();
+
+        String username = "tester1";
+        String password = "1234";
+        String passwordConfirm = "12345";
+        MemberRequest.SignUp request = MemberRequest.SignUp.builder()
+                .username(username)
+                .password(password)
+                .passwordConfirm(passwordConfirm)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("status").value("BAD_REQUEST"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-01-01-03"))
+                .andExpect(jsonPath("message").value(ResCode.F_01_01_03.getMessage()))
+                .andExpect(jsonPath("data[0].field").value("passwordConfirm"))
+                .andExpect(jsonPath("data[0].objectName").exists())
+                .andExpect(jsonPath("data[0].code").value("not matched"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("passwordConfirm does not matched with password"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(passwordConfirm))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+
+        assertThrows(ApiResponseException.class, () -> this.memberService.getMemberById(count + 1));
+    }
 }

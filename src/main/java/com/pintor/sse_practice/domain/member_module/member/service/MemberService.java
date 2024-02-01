@@ -77,6 +77,18 @@ public class MemberService {
                     )
             );
         }
+
+        if (!request.getPassword().equals(request.getPasswordConfirm())) {
+
+            errors.rejectValue("passwordConfirm", "not matched", "passwordConfirm does not matched with password");
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_01_01_03,
+                            errors
+                    )
+            );
+        }
     }
 
     public Member getMemberById(Long id) {
