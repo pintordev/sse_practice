@@ -2,6 +2,7 @@ package com.pintor.sse_practice.domain.member_module.member.controller;
 
 
 import com.pintor.sse_practice.domain.member_module.member.dto.MemberCreatedDto;
+import com.pintor.sse_practice.domain.member_module.member.dto.MemberTokenDto;
 import com.pintor.sse_practice.domain.member_module.member.entity.Member;
 import com.pintor.sse_practice.domain.member_module.member.request.MemberRequest;
 import com.pintor.sse_practice.domain.member_module.member.service.MemberService;
@@ -41,6 +42,21 @@ public class MemberController {
         );
         resData.add(Link.of(AppConfig.getBaseURL() + "/member/signup").withRel("profile"));
         return ResponseEntity.created(linkTo(this.getClass()).slash("login").toUri())
+                .body(resData);
+    }
+
+    @PostMapping(value = "/login")
+    public ResponseEntity login(@Valid @RequestBody MemberRequest.Login request, Errors errors) {
+
+        String accessToken = this.memberService.login(request, errors);
+
+        ResData resData = ResData.of(
+                ResCode.S_01_02,
+                MemberTokenDto.of(accessToken)
+        );
+        resData.add(Link.of(AppConfig.getIndexURL()).withSelfRel());
+        resData.add(Link.of(AppConfig.getBaseURL() + "/member/login").withRel("profile"));
+        return ResponseEntity.ok()
                 .body(resData);
     }
 }

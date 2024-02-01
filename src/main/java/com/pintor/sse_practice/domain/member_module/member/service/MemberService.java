@@ -5,6 +5,7 @@ import com.pintor.sse_practice.domain.member_module.member.entity.MemberRole;
 import com.pintor.sse_practice.domain.member_module.member.repository.MemberRepository;
 import com.pintor.sse_practice.domain.member_module.member.request.MemberRequest;
 import com.pintor.sse_practice.global.errors.exception.ApiResponseException;
+import com.pintor.sse_practice.global.jwt.JwtProvider;
 import com.pintor.sse_practice.global.response.ResCode;
 import com.pintor.sse_practice.global.response.ResData;
 import com.pintor.sse_practice.global.util.AppConfig;
@@ -25,6 +26,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
+
     private final EntityManager entityManager;
 
     public long count() {
@@ -91,11 +94,35 @@ public class MemberService {
         }
     }
 
+    public String login(MemberRequest.Login request, Errors errors) {
+
+        Member member = this.getMemberByUsername(request.getUsername());
+
+        return this.getAccessToken(member);
+    }
+
+    private String getAccessToken(Member member) {
+        return this.jwtProvider.genToken(member.toClaims(), 60 * 60 * 1); // 3시간 토큰
+    }
+
     public Member getMemberById(Long id) {
 
         Errors errors = AppConfig.getMockErrors("member");
 
         return this.memberRepository.findById(id)
+                .orElseThrow(() -> new ApiResponseException(
+                        ResData.of(
+                                ResCode.F_01_03_01,
+                                errors
+                        )
+                ));
+    }
+
+    public Member getMemberByUsername(String username) {
+
+        Errors errors = AppConfig.getMockErrors("member");
+
+        return this.memberRepository.findByUsername(username)
                 .orElseThrow(() -> new ApiResponseException(
                         ResData.of(
                                 ResCode.F_01_03_01,

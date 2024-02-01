@@ -10,6 +10,7 @@ public enum ResCode {
 
     // member controller success code
     S_01_01(HttpStatus.CREATED, "S-01-01", "회원가입이 완료되었습니다"),
+    S_01_02(HttpStatus.OK, "S-01-02", "액세스 토큰이 생성되었습니다"),
 
     // board controller success code
     S_02_01(HttpStatus.CREATED, "S-02-01", "게시글 등록이 완료되었습니다"),

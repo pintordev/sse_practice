@@ -8,6 +8,7 @@
 ## 24-02-01
 - [x] #11 - post:/api/members - F-01-01-03 TC
 - [x] #12 - global/jwt, global/security 추가 및 업데이트
+- [x] #13 - post:/api/members/login - S-01-02 TC
 
 ## 24-01-31
 - [x] #8 - post:/api/members - S-01-01 TC

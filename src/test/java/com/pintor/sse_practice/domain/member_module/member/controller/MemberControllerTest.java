@@ -213,4 +213,38 @@ class MemberControllerTest extends BaseControllerTest {
 
         assertThrows(ApiResponseException.class, () -> this.memberService.getMemberById(count + 1));
     }
+
+    @Test
+    @DisplayName("post:/api/members/login - ok, S-01-02")
+    public void login_OK() throws Exception {
+
+        // given
+        String username = "user1";
+        String password = "1234";
+        MemberRequest.Login request = MemberRequest.Login.builder()
+                .username(username)
+                .password(password)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("status").value("OK"))
+                .andExpect(jsonPath("success").value("true"))
+                .andExpect(jsonPath("code").value("S-01-02"))
+                .andExpect(jsonPath("message").value(ResCode.S_01_02.getMessage()))
+                .andExpect(jsonPath("data.accessToken").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+        ;
+    }
 }

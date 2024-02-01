@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -33,5 +34,13 @@ public class Member extends BaseEntity {
         return this.authorities.stream()
                 .map(a -> new SimpleGrantedAuthority(a.getType()))
                 .collect(Collectors.toList());
+    }
+
+    public Map<String, Object> toClaims() {
+
+        return Map.of(
+                "id", this.getId(),
+                "username", this.getUsername()
+        );
     }
 }

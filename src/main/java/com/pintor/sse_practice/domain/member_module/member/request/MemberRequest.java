@@ -24,4 +24,17 @@ public class MemberRequest {
         @NotBlank
         private String passwordConfirm;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Login {
+
+        @NotBlank
+        private String username;
+
+        @NotBlank
+        private String password;
+    }
 }
