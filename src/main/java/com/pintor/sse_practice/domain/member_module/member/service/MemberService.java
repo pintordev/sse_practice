@@ -114,6 +114,18 @@ public class MemberService {
                     )
             );
         }
+
+        if (!this.memberRepository.existsByUsername(request.getUsername())) {
+
+            errors.rejectValue("username", "not exist", "member that has username does not exist");
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_01_02_02,
+                            errors
+                    )
+            );
+        }
     }
 
     private String getAccessToken(Member member) {

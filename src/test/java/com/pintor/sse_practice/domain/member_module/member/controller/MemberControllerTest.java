@@ -298,4 +298,41 @@ class MemberControllerTest extends BaseControllerTest {
 
         return argumentsBuilder.build();
     }
+
+    @Test
+    @DisplayName("post:/api/members/login - member not exist, F-01-02-02")
+    public void login_BadRequest_MemberNotExist() throws Exception {
+
+        // given
+        String username = "tester1";
+        String password = "1234";
+        MemberRequest.Login request = MemberRequest.Login.builder()
+                .username(username)
+                .password(password)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("status").value("NOT_FOUND"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-01-02-02"))
+                .andExpect(jsonPath("message").value(ResCode.F_01_02_02.getMessage()))
+                .andExpect(jsonPath("data[0].field").value("username"))
+                .andExpect(jsonPath("data[0].objectName").exists())
+                .andExpect(jsonPath("data[0].code").value("not exist"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("member that has username does not exist"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(username))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+    }
 }
