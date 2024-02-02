@@ -23,6 +23,8 @@ public enum ResCode {
     F_01_01_02(HttpStatus.BAD_REQUEST, "F-01-01-02", "이미 존재하는 회원 이름입니다"),
     F_01_01_03(HttpStatus.BAD_REQUEST, "F-01-01-03", "비밀번호가 서로 일치하지 않습니다"),
 
+    F_01_02_01(HttpStatus.BAD_REQUEST, "F-01-02-01", "요청 값이 올바르지 않습니다"),
+
     F_01_03_01(HttpStatus.NOT_FOUND, "F-01-03-01", "해당 회원을 찾을 수 없습니다"),
 
     // board controller fail code

@@ -96,9 +96,24 @@ public class MemberService {
 
     public String login(MemberRequest.Login request, Errors errors) {
 
+        this.loginValidate(request, errors);
+
         Member member = this.getMemberByUsername(request.getUsername());
 
         return this.getAccessToken(member);
+    }
+
+    private void loginValidate(MemberRequest.Login request, Errors errors) {
+
+        if (errors.hasErrors()) {
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_01_02_01,
+                            errors
+                    )
+            );
+        }
     }
 
     private String getAccessToken(Member member) {

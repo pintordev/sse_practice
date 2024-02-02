@@ -5,6 +5,9 @@
 >- **연습용 리포지터리**
 >- **단순 게시판 + 알림기능 추가**
 
+## 24-02-02
+- [x] #14 - post:/api/members/login - F-01-02-01 TC
+
 ## 24-02-01
 - [x] #11 - post:/api/members - F-01-01-03 TC
 - [x] #12 - global/jwt, global/security 추가 및 업데이트

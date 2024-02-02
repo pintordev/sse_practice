@@ -247,4 +247,55 @@ class MemberControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.profile").exists())
         ;
     }
+
+    @ParameterizedTest
+    @MethodSource("argsFor_login_BadRequest_NotBlank")
+    @DisplayName("post:/api/members/login - not blank, F-01-02-01")
+    public void login_BadRequest_NotBlank(String username, String password) throws Exception {
+
+        // given
+        MemberRequest.Login request = MemberRequest.Login.builder()
+                .username(username)
+                .password(password)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("status").value("BAD_REQUEST"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-01-02-01"))
+                .andExpect(jsonPath("message").value(ResCode.F_01_02_01.getMessage()))
+                .andExpect(jsonPath("data[0].field").exists())
+                .andExpect(jsonPath("data[0].objectName").exists())
+                .andExpect(jsonPath("data[0].code").exists())
+                .andExpect(jsonPath("data[0].defaultMessage").exists())
+                .andExpect(jsonPath("data[0].rejectedValue").value(" "))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+    }
+
+    private static Stream<Arguments> argsFor_login_BadRequest_NotBlank() {
+
+        String[] usernames = {" ", "user1"};
+        String[] passwords = {" ", "1234"};
+
+        Stream.Builder<Arguments> argumentsBuilder = Stream.builder();
+
+        for (String username : usernames)
+            for (String password : passwords)
+                if (username.isBlank() || password.isBlank())
+                    argumentsBuilder.add(Arguments.of(username, password));
+
+        return argumentsBuilder.build();
+    }
 }
