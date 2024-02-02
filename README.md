@@ -8,6 +8,7 @@
 ## 24-02-02
 - [x] #14 - post:/api/members/login - F-01-02-01 TC
 - [x] #15 - post:/api/members/login - F-01-02-02 TC
+- [x] #16 - post:/api/members/login - F-01-02-03 TC
 
 ## 24-02-01
 - [x] #11 - post:/api/members - F-01-01-03 TC

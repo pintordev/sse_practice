@@ -126,6 +126,18 @@ public class MemberService {
                     )
             );
         }
+
+        if (!this.passwordEncoder.matches(request.getPassword(), this.getMemberByUsername(request.getUsername()).getPassword())) {
+
+            errors.rejectValue("password", "not matched", "password is not matched with member that has username");
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_01_02_03,
+                            errors
+                    )
+            );
+        }
     }
 
     private String getAccessToken(Member member) {

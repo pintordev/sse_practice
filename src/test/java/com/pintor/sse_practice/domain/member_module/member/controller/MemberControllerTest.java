@@ -335,4 +335,41 @@ class MemberControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.index").exists())
         ;
     }
+
+    @Test
+    @DisplayName("post:/api/members/login - password not matched, F-01-02-03")
+    public void login_BadRequest_PasswordNotMatched() throws Exception {
+
+        // given
+        String username = "user1";
+        String password = "12345";
+        MemberRequest.Login request = MemberRequest.Login.builder()
+                .username(username)
+                .password(password)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("status").value("BAD_REQUEST"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-01-02-03"))
+                .andExpect(jsonPath("message").value(ResCode.F_01_02_03.getMessage()))
+                .andExpect(jsonPath("data[0].field").value("password"))
+                .andExpect(jsonPath("data[0].objectName").exists())
+                .andExpect(jsonPath("data[0].code").value("not matched"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("password is not matched with member that has username"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(password))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+    }
 }

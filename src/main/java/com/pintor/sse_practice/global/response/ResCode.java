@@ -25,6 +25,7 @@ public enum ResCode {
 
     F_01_02_01(HttpStatus.BAD_REQUEST, "F-01-02-01", "요청 값이 올바르지 않습니다"),
     F_01_02_02(HttpStatus.NOT_FOUND, "F-01-02-02", "해당 아이디를 갖는 회원을 찾을 수 없습니다"),
+    F_01_02_03(HttpStatus.BAD_REQUEST, "F-01-02-03", "비밀번호가 일치하지 않습니다"),
 
     F_01_03_01(HttpStatus.NOT_FOUND, "F-01-03-01", "해당 회원을 찾을 수 없습니다"),
 
