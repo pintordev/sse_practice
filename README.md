@@ -5,6 +5,9 @@
 >- **연습용 리포지터리**
 >- **단순 게시판 + 알림기능 추가**
 
+## 24-02-03
+- [x] #17 - front-end login setting for login
+
 ## 24-02-02
 - [x] #14 - post:/api/members/login - F-01-02-01 TC
 - [x] #15 - post:/api/members/login - F-01-02-02 TC
