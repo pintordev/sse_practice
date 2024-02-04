@@ -36,5 +36,9 @@ public class MemberRequest {
 
         @NotBlank
         private String password;
+
+        public static Login of(String username, String password) {
+            return new Login(username, password);
+        }
     }
 }

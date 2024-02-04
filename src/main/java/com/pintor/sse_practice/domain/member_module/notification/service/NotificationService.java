@@ -25,7 +25,7 @@ public class NotificationService {
         String id = member.getId() + "_" + LocalDateTime.now().getNano();
         SseEmitter sseEmitter = this.sseEmitterRepository.save(id);
 
-        this.sendToClient(sseEmitter, id, "client to sever connected");
+        this.sendToClient(sseEmitter, id, "client has connected to server");
 
         return sseEmitter;
     }

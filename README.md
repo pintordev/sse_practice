@@ -5,6 +5,9 @@
 >- **연습용 리포지터리**
 >- **단순 게시판 + 알림기능 추가**
 
+## 24-02-05
+- [x] #19 - post:/api/notifications/connect - S-04-01 TC
+
 ## 24-02-04
 - [x] #18 - sse connect
 
