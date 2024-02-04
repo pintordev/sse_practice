@@ -40,7 +40,7 @@ public class MemberController {
                 MemberCreatedDto.of(member),
                 linkTo(this.getClass()).slash("login")
         );
-        resData.add(Link.of(AppConfig.getBaseURL() + "/member/signup").withRel("profile"));
+        resData.add(Link.of(AppConfig.getBaseURL() + "/members/signup").withRel("profile"));
         return ResponseEntity.created(linkTo(this.getClass()).slash("login").toUri())
                 .body(resData);
     }

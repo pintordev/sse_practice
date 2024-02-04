@@ -18,6 +18,9 @@ public enum ResCode {
     // comment controller success code
     S_03_01(HttpStatus.CREATED, "S-03-01", "댓글 등록이 완료되었습니다"),
 
+    // notification controller success code
+    S_04_01(HttpStatus.CREATED, "S-04-01", "서버 연결이 완료되었습니다"),
+
     // member controller fail code
     F_01_01_01(HttpStatus.BAD_REQUEST, "F-01-01-01", "요청 값이 올바르지 않습니다"),
     F_01_01_02(HttpStatus.BAD_REQUEST, "F-01-01-02", "이미 존재하는 회원 이름입니다"),
@@ -32,6 +35,9 @@ public enum ResCode {
     // board controller fail code
 
     // comment controller fail code
+
+    // notification controller fail code
+    F_04_01_01(HttpStatus.INTERNAL_SERVER_ERROR, "F-04-01-01", "서버 연결 중 오류가 발생했습니다"),
 
     // system fail code
     F_99_99_01(HttpStatus.UNAUTHORIZED, "F-99-99-01", "로그인이 필요한 요청입니다"),

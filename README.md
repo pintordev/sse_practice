@@ -5,6 +5,9 @@
 >- **연습용 리포지터리**
 >- **단순 게시판 + 알림기능 추가**
 
+## 24-02-04
+- [x] #18 - sse connect
+
 ## 24-02-03
 - [x] #17 - front-end login setting for login
 
