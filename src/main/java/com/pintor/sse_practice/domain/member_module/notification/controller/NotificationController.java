@@ -27,7 +27,9 @@ public class NotificationController {
 
     @GetMapping(value = "/connect", consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> sseConnect(@AuthenticationPrincipal User user,
-                                     @RequestHeader(value = "lastEventId", required = false, defaultValue = "") String lastEventId) {
+                                                 @RequestHeader(value = "Last-Event-Id", required = false, defaultValue = "") String lastEventId) {
+
+        log.info(lastEventId);
 
         Member member = this.memberService.getMemberByUsername(user.getUsername());
         SseEmitter sseEmitter = this.notificationService.subscribe(member, lastEventId);

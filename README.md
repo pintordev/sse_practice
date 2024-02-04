@@ -7,6 +7,7 @@
 
 ## 24-02-05
 - [x] #19 - post:/api/notifications/connect - S-04-01 TC
+- [x] #20 - front-end sse connect after login
 
 ## 24-02-04
 - [x] #18 - sse connect

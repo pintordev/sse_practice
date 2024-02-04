@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 @Transactional(readOnly = true)
 @Service
@@ -22,7 +21,8 @@ public class NotificationService {
 
     public SseEmitter subscribe(Member member, String lastEventId) {
 
-        String id = member.getId() + "_" + LocalDateTime.now().getNano();
+        String id = member.getId() + "_" + System.currentTimeMillis();
+
         SseEmitter sseEmitter = this.sseEmitterRepository.save(id);
 
         this.sendToClient(sseEmitter, id, "client has connected to server");

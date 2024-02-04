@@ -2,7 +2,7 @@ window.onload = function() {
     const newElement = document.createElement("div");
     document.body.appendChild(newElement);
 
-    fetch("http://localhost:8080/api/members/login", {
+    fetch("/api/members/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -13,9 +13,20 @@ window.onload = function() {
       }),
     })
     .then((response) => response.json())
-    .then((json) => localStorage.setItem("accessToken", json.data.accessToken))
+    .then((json) => localStorage.setItem("sse_access_token", json.data.accessToken))
     .catch((error) => console.log(error))
 
+    const sse = new EventSourcePolyfill(
+                "/api/notifications/connect", {
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem("sse_access_token"),
+                        "Last-Event-Id": localStorage.getItem("sse_last_event_id")
+                    }
+                }
+            );
 
-    alert(localStorage.getItem("accessToken"));
+    sse.addEventListener("connect", e => {
+        console.log(e.data);
+        localStorage.setItem("sse_last_event_id", e.lastEventId);
+    })
 }
