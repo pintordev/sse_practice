@@ -41,8 +41,5 @@ class NotificationControllerTest extends BaseControllerTest {
                 .andExpect(content().string(containsString("event:connect")))
                 .andExpect(content().string(containsString("data:client has connected to server")))
         ;
-
-
     }
-
 }

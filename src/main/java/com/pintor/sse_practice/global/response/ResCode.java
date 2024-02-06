@@ -33,6 +33,7 @@ public enum ResCode {
     F_01_03_01(HttpStatus.NOT_FOUND, "F-01-03-01", "해당 회원을 찾을 수 없습니다"),
 
     // board controller fail code
+    F_02_02_01(HttpStatus.NOT_FOUND, "F-02-02-01", "해당 게시글을 찾을 수 없습니다"),
 
     // comment controller fail code
 
