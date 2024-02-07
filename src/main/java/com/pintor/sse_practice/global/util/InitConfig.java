@@ -1,5 +1,7 @@
 package com.pintor.sse_practice.global.util;
 
+import com.pintor.sse_practice.domain.board_module.board.entity.Board;
+import com.pintor.sse_practice.domain.board_module.board.request.BoardRequest;
 import com.pintor.sse_practice.domain.board_module.board.service.BoardService;
 import com.pintor.sse_practice.domain.board_module.comment.service.CommentService;
 import com.pintor.sse_practice.domain.member_module.member.entity.Member;
@@ -41,9 +43,9 @@ public class InitConfig {
                     AppConfig.getMockErrors()
             );
 
-            Member user1 = this.memberService.signup(
+            Member member1 = this.memberService.signup(
                     MemberRequest.SignUp.builder()
-                            .username("user1")
+                            .username("member1")
                             .password("1234")
                             .passwordConfirm("1234")
                             .build(),
@@ -51,14 +53,32 @@ public class InitConfig {
                     AppConfig.getMockErrors()
             );
 
-            Member user2 = this.memberService.signup(
+            Member member2 = this.memberService.signup(
                     MemberRequest.SignUp.builder()
-                            .username("user2")
+                            .username("member2")
                             .password("1234")
                             .passwordConfirm("1234")
                             .build(),
                     true,
                     AppConfig.getMockErrors()
+            );
+
+            Board board1 = this.boardService.create(
+                    BoardRequest.Create.builder()
+                            .title("board1 title")
+                            .content("board1 content")
+                            .build(),
+                    AppConfig.getMockErrors(),
+                    member1
+            );
+
+            Board board2 = this.boardService.create(
+                    BoardRequest.Create.builder()
+                            .title("board2 title")
+                            .content("board2 content")
+                            .build(),
+                    AppConfig.getMockErrors(),
+                    member2
             );
         };
     }

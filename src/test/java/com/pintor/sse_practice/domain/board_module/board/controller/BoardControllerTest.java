@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -137,6 +138,39 @@ class BoardControllerTest extends BaseControllerTest {
                     argumentsBuilder.add(Arguments.of(title, content));
 
         return argumentsBuilder.build();
+    }
+
+    @Test
+    @DisplayName("get:/api/boards/{id} - ok, S-02-02")
+    public void getBoard_OK() throws Exception {
+
+        // given
+        Long id = 1L;
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(get("/api/boards/%s".formatted(id))
+                        .contentType(MediaType.ALL)
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("status").value("OK"))
+                .andExpect(jsonPath("success").value("true"))
+                .andExpect(jsonPath("code").value("S-02-02"))
+                .andExpect(jsonPath("message").value(ResCode.S_02_02.getMessage()))
+                .andExpect(jsonPath("data.id").value(id))
+                .andExpect(jsonPath("data.createDate").exists())
+                .andExpect(jsonPath("data.modifyDate").exists())
+                .andExpect(jsonPath("data.title").exists())
+                .andExpect(jsonPath("data.content").exists())
+                .andExpect(jsonPath("data.author").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+        ;
     }
 
 }

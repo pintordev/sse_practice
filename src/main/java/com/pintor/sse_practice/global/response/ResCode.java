@@ -14,6 +14,7 @@ public enum ResCode {
 
     // board controller success code
     S_02_01(HttpStatus.CREATED, "S-02-01", "게시글 등록이 완료되었습니다"),
+    S_02_02(HttpStatus.OK, "S-02-02", "해당 게시글 정보를 반환합니다"),
 
     // comment controller success code
     S_03_01(HttpStatus.CREATED, "S-03-01", "댓글 등록이 완료되었습니다"),

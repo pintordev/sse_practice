@@ -1,6 +1,7 @@
 package com.pintor.sse_practice.domain.board_module.board.controller;
 
 import com.pintor.sse_practice.domain.board_module.board.dto.BoardCreatedDto;
+import com.pintor.sse_practice.domain.board_module.board.dto.BoardGetDto;
 import com.pintor.sse_practice.domain.board_module.board.entity.Board;
 import com.pintor.sse_practice.domain.board_module.board.request.BoardRequest;
 import com.pintor.sse_practice.domain.board_module.board.service.BoardService;
@@ -18,10 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -47,6 +45,21 @@ public class BoardController {
         );
         resData.add(Link.of(AppConfig.getBaseURL() + "/boards/createBoard").withRel("profile"));
         return ResponseEntity.created(linkTo(this.getClass()).slash(board.getId()).toUri())
+                .body(resData);
+    }
+
+    @GetMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
+    public ResponseEntity getBoard(@PathVariable("id") Long id) {
+
+        Board board = this.boardService.getBoardById(id);
+
+        ResData resData = ResData.of(
+                ResCode.S_02_02,
+                BoardGetDto.of(board),
+                linkTo(this.getClass()).slash(board.getId())
+        );
+        resData.add(Link.of(AppConfig.getBaseURL() + "/boards/getBoard").withRel("profile"));
+        return ResponseEntity.ok()
                 .body(resData);
     }
 
