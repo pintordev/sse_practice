@@ -36,6 +36,8 @@ public class BoardService {
 
     public Board create(BoardRequest.Create request, Errors errors, Member author) {
 
+        this.createValidate(request, errors);
+
         Board board = Board.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -45,6 +47,19 @@ public class BoardService {
         this.boardRepository.save(board);
 
         return this.refresh(board);
+    }
+
+    private void createValidate(BoardRequest.Create request, Errors errors) {
+
+        if (errors.hasErrors()) {
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_02_01_01,
+                            errors
+                    )
+            );
+        }
     }
 
     public Board getBoardById(Long id) {
