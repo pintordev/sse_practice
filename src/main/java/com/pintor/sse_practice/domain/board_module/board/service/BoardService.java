@@ -64,14 +64,18 @@ public class BoardService {
 
     public Board getBoardById(Long id) {
 
-        Errors errors = AppConfig.getMockErrors("board");
-
         return this.boardRepository.findById(id)
-                .orElseThrow(() -> new ApiResponseException(
-                        ResData.of(
-                                ResCode.F_02_02_01,
-                                errors
-                        )
-                ));
+                .orElseThrow(() -> {
+
+                    Errors errors = AppConfig.getMockErrors("board");
+                    errors.reject("not found", new Object[]{id}, "board that has id is not found");
+
+                    return new ApiResponseException(
+                            ResData.of(
+                                    ResCode.F_02_02_01,
+                                    errors
+                            )
+                    );
+                });
     }
 }

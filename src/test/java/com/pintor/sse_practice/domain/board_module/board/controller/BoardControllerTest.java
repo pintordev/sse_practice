@@ -173,4 +173,34 @@ class BoardControllerTest extends BaseControllerTest {
         ;
     }
 
+    @Test
+    @DisplayName("get:/api/boards/{id} - bad request not found, F-02-02-01")
+    public void getBoard_BadRequest_NotFound() throws Exception {
+
+        // given
+        Long id = this.boardService.count() + 1;
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(get("/api/boards/%s".formatted(id))
+                        .contentType(MediaType.ALL)
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("status").value("NOT_FOUND"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-02-02-01"))
+                .andExpect(jsonPath("message").value(ResCode.F_02_02_01.getMessage()))
+                .andExpect(jsonPath("data[0].objectName").value("board"))
+                .andExpect(jsonPath("data[0].code").value("not found"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("board that has id is not found"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(id.toString()))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+    }
+
 }

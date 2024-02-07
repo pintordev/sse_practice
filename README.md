@@ -8,6 +8,7 @@
 ## 24-02-07
 - [x] #22 - post:/api/boards - F-02-01-01 TC
 - [x] #23 - get:/api/boards/{id} - S-02-02 TC
+- [x] #24 - get:/api/boards/{id} - F-02-02-01 TC
 
 ## 24-02-06
 - [x] #21 - post:/api/boards - S-02-01 TC
