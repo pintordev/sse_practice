@@ -7,11 +7,15 @@ import com.pintor.sse_practice.domain.board_module.board.request.BoardRequest;
 import com.pintor.sse_practice.domain.board_module.board.service.BoardService;
 import com.pintor.sse_practice.domain.member_module.member.entity.Member;
 import com.pintor.sse_practice.domain.member_module.member.service.MemberService;
+import com.pintor.sse_practice.global.response.DataModel;
+import com.pintor.sse_practice.global.response.PagedDataModel;
 import com.pintor.sse_practice.global.response.ResCode;
 import com.pintor.sse_practice.global.response.ResData;
 import com.pintor.sse_practice.global.util.AppConfig;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
@@ -59,6 +63,25 @@ public class BoardController {
                 linkTo(this.getClass()).slash(board.getId())
         );
         resData.add(Link.of(AppConfig.getBaseURL() + "/boards/getBoard").withRel("profile"));
+        return ResponseEntity.ok()
+                .body(resData);
+    }
+
+    @GetMapping(consumes = MediaType.ALL_VALUE)
+    public ResponseEntity getBoards(@RequestParam(value = "page", defaultValue = "1") int page,
+                                    @RequestParam(value = "size", defaultValue = "20") int size,
+                                    HttpServletRequest request) {
+
+
+        Page<DataModel> boardPages = this.boardService.getBoardPages(page, size);
+
+        ResData resData = ResData.of(
+                ResCode.S_02_03,
+                PagedDataModel.of(boardPages),
+                linkTo(this.getClass()).slash(request.getQueryString() != null ? "?%s".formatted(request.getQueryString()) : "")
+        );
+
+        resData.add(Link.of(AppConfig.getBaseURL() + "/boards/getBoards").withRel("profile"));
         return ResponseEntity.ok()
                 .body(resData);
     }

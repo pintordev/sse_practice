@@ -1,10 +1,12 @@
 package com.pintor.sse_practice.domain.board_module.board.controller;
 
+import com.jayway.jsonpath.JsonPath;
 import com.pintor.sse_practice.domain.board_module.board.request.BoardRequest;
 import com.pintor.sse_practice.domain.board_module.board.service.BoardService;
 import com.pintor.sse_practice.global.controller.BaseControllerTest;
 import com.pintor.sse_practice.global.errors.exception.ApiResponseException;
 import com.pintor.sse_practice.global.response.ResCode;
+import com.pintor.sse_practice.global.util.AppConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +17,8 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.stream.Stream;
 
@@ -201,6 +205,79 @@ class BoardControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("data[0].rejectedValue").value(id.toString()))
                 .andExpect(jsonPath("_links.index").exists())
         ;
+    }
+
+    @ParameterizedTest
+    @MethodSource("argsFor_getBoards_OK")
+    @DisplayName("get:/api/boards - ok, S-02-03")
+    public void getBoards_OK(Integer page, Integer size) throws Exception {
+
+        // given
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        if (page != null) params.add("page", page.toString());
+        if (size != null) params.add("size", size.toString());
+
+        String query = AppConfig.getBaseURL() + ":8080/api/boards" + (AppConfig.getQueryString(params).isBlank() ? "" : "?%s".formatted(AppConfig.getQueryString(params)));
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(get("/api/boards?%s".formatted(AppConfig.getQueryString(params)))
+                        .contentType(MediaType.ALL)
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("status").value("OK"))
+                .andExpect(jsonPath("success").value("true"))
+                .andExpect(jsonPath("code").value("S-02-03"))
+                .andExpect(jsonPath("message").value(ResCode.S_02_03.getMessage()))
+                .andExpect(jsonPath("data.page").value(1))
+                .andExpect(jsonPath("data.sort[0].property").value("createDate"))
+                .andExpect(jsonPath("data.sort[0].direction").value("desc"))
+                .andExpect(jsonPath("_links.self.href").value(query))
+                .andExpect(jsonPath("_links.profile").exists())
+        ;
+
+        int len = JsonPath.read(resultActions.andReturn().getResponse().getContentAsString(), "data.list.length()");
+
+        if (len > 0) {
+            resultActions
+                    .andExpect(jsonPath("data.list[0].id").exists())
+                    .andExpect(jsonPath("data.list[0].createDate").exists())
+                    .andExpect(jsonPath("data.list[0].modifyDate").exists())
+                    .andExpect(jsonPath("data.list[0].title").exists())
+                    .andExpect(jsonPath("data.list[0].content").exists())
+                    .andExpect(jsonPath("data.list[0].author").exists())
+                    .andExpect(jsonPath("data.list[0]._links.self").exists())
+            ;
+        }
+
+        if (size == null || size == 20) {
+            resultActions
+                    .andExpect(jsonPath("data.size").value(20))
+            ;
+        } else {
+            resultActions
+                    .andExpect(jsonPath("data.size").value(size))
+            ;
+        }
+    }
+
+    private static Stream<Arguments> argsFor_getBoards_OK() {
+
+        Integer[] pages = {null, 1};
+        Integer[] sizes = {null, 20, 50, 100};
+
+        Stream.Builder<Arguments> argumentsBuilder = Stream.builder();
+
+        for (Integer page : pages)
+            for (Integer size : sizes)
+                argumentsBuilder.add(Arguments.of(page, size));
+
+        return argumentsBuilder.build();
     }
 
 }

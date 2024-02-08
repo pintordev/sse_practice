@@ -1,18 +1,30 @@
 package com.pintor.sse_practice.domain.board_module.board.service;
 
+import com.pintor.sse_practice.domain.board_module.board.controller.BoardController;
+import com.pintor.sse_practice.domain.board_module.board.dto.BoardGetDto;
 import com.pintor.sse_practice.domain.board_module.board.entity.Board;
 import com.pintor.sse_practice.domain.board_module.board.repository.BoardRepository;
 import com.pintor.sse_practice.domain.board_module.board.request.BoardRequest;
 import com.pintor.sse_practice.domain.member_module.member.entity.Member;
 import com.pintor.sse_practice.global.errors.exception.ApiResponseException;
+import com.pintor.sse_practice.global.response.DataModel;
 import com.pintor.sse_practice.global.response.ResCode;
 import com.pintor.sse_practice.global.response.ResData;
 import com.pintor.sse_practice.global.util.AppConfig;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Transactional(readOnly = true)
 @Service
@@ -76,6 +88,22 @@ public class BoardService {
                                     errors
                             )
                     );
+                });
+    }
+
+    public Page<DataModel> getBoardPages(int page, int size) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sorts));
+
+        return this.boardRepository.findAll(pageable)
+                .map(board -> {
+                    DataModel dataModel = DataModel.of(
+                            BoardGetDto.of(board),
+                            linkTo(BoardController.class).slash(board.getId())
+                    );
+                    return dataModel;
                 });
     }
 }
