@@ -93,6 +93,8 @@ public class BoardService {
 
     public Page<DataModel> getBoardPages(int page, int size) {
 
+        this.getBoardPagesValidate(page, size);
+
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sorts));
@@ -105,5 +107,22 @@ public class BoardService {
                     );
                     return dataModel;
                 });
+    }
+
+    private void getBoardPagesValidate(int page, int size) {
+
+        Errors errors = AppConfig.getMockErrors("board");
+
+        if (page < 1 || Math.ceil((double) this.boardRepository.count() / size) < page) {
+
+            errors.reject("not exist", new Object[]{page}, "requested page does not exist");
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_02_03_01,
+                            errors
+                    )
+            );
+        }
     }
 }

@@ -280,4 +280,50 @@ class BoardControllerTest extends BaseControllerTest {
         return argumentsBuilder.build();
     }
 
+    @ParameterizedTest
+    @MethodSource("argsFor_getBoards_BadRequest_PageNotExist")
+    @DisplayName("get:/api/boards - bad request page not exist, F-02-03-01")
+    public void getBoards_BadRequest_PageNotExist(Integer page, Integer size) throws Exception {
+
+        // given
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        if (page != null) params.add("page", page.toString());
+        if (size != null) params.add("size", size.toString());
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(get("/api/boards?%s".formatted(AppConfig.getQueryString(params)))
+                        .contentType(MediaType.ALL)
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("status").value("BAD_REQUEST"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-02-03-01"))
+                .andExpect(jsonPath("message").value(ResCode.F_02_03_01.getMessage()))
+                .andExpect(jsonPath("data[0].objectName").value("board"))
+                .andExpect(jsonPath("data[0].code").value("not exist"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("requested page does not exist"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(page.toString()))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+    }
+
+    private static Stream<Arguments> argsFor_getBoards_BadRequest_PageNotExist() {
+
+        Integer[] pages = {-1, 0, 1000000};
+        Integer[] sizes = {null, 20, 50, 100};
+
+        Stream.Builder<Arguments> argumentsBuilder = Stream.builder();
+
+        for (Integer page : pages)
+            for (Integer size : sizes)
+                argumentsBuilder.add(Arguments.of(page, size));
+
+        return argumentsBuilder.build();
+    }
 }
