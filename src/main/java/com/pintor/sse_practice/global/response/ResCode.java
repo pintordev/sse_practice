@@ -42,6 +42,7 @@ public enum ResCode {
     F_02_03_01(HttpStatus.BAD_REQUEST, "F-02-03-01", "해당 페이지가 존재하지 않습니다"),
 
     // comment controller fail code
+    F_03_02_01(HttpStatus.NOT_FOUND, "F-03-02-01", "해당 댓글을 찾을 수 없습니다"),
 
     // notification controller fail code
     F_04_01_01(HttpStatus.INTERNAL_SERVER_ERROR, "F-04-01-01", "서버 연결 중 오류가 발생했습니다"),

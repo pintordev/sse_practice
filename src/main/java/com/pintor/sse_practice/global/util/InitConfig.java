@@ -3,6 +3,8 @@ package com.pintor.sse_practice.global.util;
 import com.pintor.sse_practice.domain.board_module.board.entity.Board;
 import com.pintor.sse_practice.domain.board_module.board.request.BoardRequest;
 import com.pintor.sse_practice.domain.board_module.board.service.BoardService;
+import com.pintor.sse_practice.domain.board_module.comment.entity.Comment;
+import com.pintor.sse_practice.domain.board_module.comment.request.CommentRequest;
 import com.pintor.sse_practice.domain.board_module.comment.service.CommentService;
 import com.pintor.sse_practice.domain.member_module.member.entity.Member;
 import com.pintor.sse_practice.domain.member_module.member.request.MemberRequest;
@@ -76,6 +78,25 @@ public class InitConfig {
                     BoardRequest.Create.builder()
                             .title("board2 title")
                             .content("board2 content")
+                            .build(),
+                    AppConfig.getMockErrors(),
+                    member2
+            );
+
+            Comment comment1 = this.commentService.create(
+                    CommentRequest.Create.builder()
+                            .content("comment1 content")
+                            .boardId(board1.getId())
+                            .build(),
+                    AppConfig.getMockErrors(),
+                    member1
+            );
+
+            Comment comment2 = this.commentService.create(
+                    CommentRequest.Create.builder()
+                            .content("comment2 content")
+                            .boardId(board1.getId())
+                            .tagId(comment1.getId())
                             .build(),
                     AppConfig.getMockErrors(),
                     member2
