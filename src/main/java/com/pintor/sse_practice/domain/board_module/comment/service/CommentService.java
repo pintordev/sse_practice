@@ -40,6 +40,8 @@ public class CommentService {
     @Transactional
     public Comment create(CommentRequest.Create request, Errors errors, Member author) {
 
+        this.createValidate(request, errors);
+
         Comment comment = Comment.builder()
                 .content(request.getContent())
                 .author(author)
@@ -50,6 +52,19 @@ public class CommentService {
         this.commentRepository.save(comment);
 
         return this.refresh(comment);
+    }
+
+    private void createValidate(CommentRequest.Create request, Errors errors) {
+
+        if (errors.hasErrors()) {
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_03_01_01,
+                            errors
+                    )
+            );
+        }
     }
 
     public Comment getCommentById(Long id) {

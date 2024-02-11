@@ -3,6 +3,7 @@ package com.pintor.sse_practice.domain.board_module.comment.controller;
 import com.pintor.sse_practice.domain.board_module.comment.request.CommentRequest;
 import com.pintor.sse_practice.domain.board_module.comment.service.CommentService;
 import com.pintor.sse_practice.global.controller.BaseControllerTest;
+import com.pintor.sse_practice.global.errors.exception.ApiResponseException;
 import com.pintor.sse_practice.global.response.ResCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -97,4 +99,68 @@ class CommentControllerTest extends BaseControllerTest {
         return argumentsBuilder.build();
     }
 
+    @ParameterizedTest
+    @MethodSource("argsFor_createComment_BadRequest_NotBlank")
+    @DisplayName("post:/api/comments - bad request not blank, F-03-01-01")
+    public void createComment_BadRequest_NotBlank(String content, Long boardId) throws Exception {
+
+        // given
+        long count = this.commentService.count();
+
+        String username = "member1";
+        String password = "1234";
+        String accessToken = this.getAccessToken(username, password);
+
+        CommentRequest.Create request = CommentRequest.Create.builder()
+                .content(content)
+                .boardId(boardId)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/comments")
+                        .header("Authorization", accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("status").value("BAD_REQUEST"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-03-01-01"))
+                .andExpect(jsonPath("message").value(ResCode.F_03_01_01.getMessage()))
+                .andExpect(jsonPath("data[0].field").exists())
+                .andExpect(jsonPath("data[0].objectName").exists())
+                .andExpect(jsonPath("data[0].code").exists())
+                .andExpect(jsonPath("data[0].defaultMessage").exists())
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+
+        if (content.isBlank()) {
+            resultActions
+                    .andExpect(jsonPath("data[0].rejectedValue").value(" "))
+            ;
+        }
+
+        assertThrows(ApiResponseException.class, () -> this.commentService.getCommentById(count + 1));
+    }
+
+    private static Stream<Arguments> argsFor_createComment_BadRequest_NotBlank() {
+
+        String[] contents = {" ", "test content"};
+        Long[] boardIds = {null, 1L};
+
+        Stream.Builder<Arguments> argumentsBuilder = Stream.builder();
+
+        for (String content : contents)
+            for (Long boardId : boardIds)
+                    if (content.isBlank() || boardId == null)
+                        argumentsBuilder.add(Arguments.of(content, boardId));
+
+        return argumentsBuilder.build();
+    }
 }
