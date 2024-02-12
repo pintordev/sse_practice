@@ -1,5 +1,6 @@
 package com.pintor.sse_practice.domain.board_module.comment.service;
 
+import com.pintor.sse_practice.domain.board_module.board.repository.BoardRepository;
 import com.pintor.sse_practice.domain.board_module.board.service.BoardService;
 import com.pintor.sse_practice.domain.board_module.comment.entity.Comment;
 import com.pintor.sse_practice.domain.board_module.comment.repository.CommentRepository;
@@ -23,6 +24,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
 
     private final EntityManager entityManager;
 
@@ -61,6 +63,18 @@ public class CommentService {
             throw new ApiResponseException(
                     ResData.of(
                             ResCode.F_03_01_01,
+                            errors
+                    )
+            );
+        }
+
+        if (!this.boardRepository.existsById(request.getBoardId())) {
+
+            errors.rejectValue("boardId", "not found", "board that has id is not found");
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_03_01_02,
                             errors
                     )
             );

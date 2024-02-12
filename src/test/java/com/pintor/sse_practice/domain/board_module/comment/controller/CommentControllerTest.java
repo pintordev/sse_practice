@@ -1,11 +1,13 @@
 package com.pintor.sse_practice.domain.board_module.comment.controller;
 
+import com.pintor.sse_practice.domain.board_module.board.service.BoardService;
 import com.pintor.sse_practice.domain.board_module.comment.request.CommentRequest;
 import com.pintor.sse_practice.domain.board_module.comment.service.CommentService;
 import com.pintor.sse_practice.global.controller.BaseControllerTest;
 import com.pintor.sse_practice.global.errors.exception.ApiResponseException;
 import com.pintor.sse_practice.global.response.ResCode;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,6 +30,9 @@ class CommentControllerTest extends BaseControllerTest {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private BoardService boardService;
 
     @Transactional
     @ParameterizedTest
@@ -162,5 +167,51 @@ class CommentControllerTest extends BaseControllerTest {
                         argumentsBuilder.add(Arguments.of(content, boardId));
 
         return argumentsBuilder.build();
+    }
+
+    @Test
+    @DisplayName("post:/api/comments - not found board not found, F-03-01-02")
+    public void createComment_NotFound_BoardNotFound() throws Exception {
+
+        // given
+        long count = this.commentService.count();
+
+        String username = "member1";
+        String password = "1234";
+        String accessToken = this.getAccessToken(username, password);
+
+        String content = "test content";
+        Long boardId = this.boardService.count() + 1;
+        CommentRequest.Create request = CommentRequest.Create.builder()
+                .content(content)
+                .boardId(boardId)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/comments")
+                        .header("Authorization", accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("status").value("NOT_FOUND"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-03-01-02"))
+                .andExpect(jsonPath("message").value(ResCode.F_03_01_02.getMessage()))
+                .andExpect(jsonPath("data[0].field").value("boardId"))
+                .andExpect(jsonPath("data[0].objectName").exists())
+                .andExpect(jsonPath("data[0].code").value("not found"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("board that has id is not found"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(boardId.toString()))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+
+        assertThrows(ApiResponseException.class, () -> this.commentService.getCommentById(count + 1));
     }
 }
