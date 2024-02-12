@@ -7,6 +7,7 @@
 
 ## 24-02-12
 - [x] #29 - post:/api/comments - F-03-01-02 TC
+- [x] #30 - post:/api/comments - F-03-01-03 TC
 
 ## 24-02-11
 - [x] #28 - post:/api/comments - F-03-01-01 TC

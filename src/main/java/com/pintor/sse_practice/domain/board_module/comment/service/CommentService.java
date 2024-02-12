@@ -79,6 +79,18 @@ public class CommentService {
                     )
             );
         }
+
+        if (request.getTagId() != null && !this.commentRepository.existsById(request.getTagId())) {
+
+            errors.rejectValue("tagId", "not found", "tag that has id is not found");
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_03_01_03,
+                            errors
+                    )
+            );
+        }
     }
 
     public Comment getCommentById(Long id) {

@@ -214,4 +214,52 @@ class CommentControllerTest extends BaseControllerTest {
 
         assertThrows(ApiResponseException.class, () -> this.commentService.getCommentById(count + 1));
     }
+
+    @Test
+    @DisplayName("post:/api/comments - not found tag not found, F-03-01-03")
+    public void createComment_NotFound_TagNotFound() throws Exception {
+
+        // given
+        long count = this.commentService.count();
+
+        String username = "member1";
+        String password = "1234";
+        String accessToken = this.getAccessToken(username, password);
+
+        String content = "test content";
+        Long boardId = 1L;
+        Long tagId = this.commentService.count() + 1;
+        CommentRequest.Create request = CommentRequest.Create.builder()
+                .content(content)
+                .boardId(boardId)
+                .tagId(tagId)
+                .build();
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(post("/api/comments")
+                        .header("Authorization", accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("status").value("NOT_FOUND"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-03-01-03"))
+                .andExpect(jsonPath("message").value(ResCode.F_03_01_03.getMessage()))
+                .andExpect(jsonPath("data[0].field").value("tagId"))
+                .andExpect(jsonPath("data[0].objectName").exists())
+                .andExpect(jsonPath("data[0].code").value("not found"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("tag that has id is not found"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(tagId.toString()))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+
+        assertThrows(ApiResponseException.class, () -> this.commentService.getCommentById(count + 1));
+    }
 }
