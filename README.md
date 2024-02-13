@@ -5,6 +5,9 @@
 >- **연습용 리포지터리**
 >- **단순 게시판 + 알림기능 추가**
 
+## 24-02-13
+- [x] #31 - get:/api/comments/{id} - S-03-02 TC
+
 ## 24-02-12
 - [x] #29 - post:/api/comments - F-03-01-02 TC
 - [x] #30 - post:/api/comments - F-03-01-03 TC

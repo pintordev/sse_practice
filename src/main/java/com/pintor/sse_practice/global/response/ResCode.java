@@ -19,6 +19,7 @@ public enum ResCode {
 
     // comment controller success code
     S_03_01(HttpStatus.CREATED, "S-03-01", "댓글 등록이 완료되었습니다"),
+    S_03_02(HttpStatus.OK, "S-03-02", "해당 댓글 정보를 반환합니다"),
 
     // notification controller success code
     S_04_01(HttpStatus.CREATED, "S-04-01", "서버 연결이 완료되었습니다"),

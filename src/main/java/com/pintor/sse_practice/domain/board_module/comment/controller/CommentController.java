@@ -1,6 +1,7 @@
 package com.pintor.sse_practice.domain.board_module.comment.controller;
 
 import com.pintor.sse_practice.domain.board_module.comment.dto.CommentCreatedDto;
+import com.pintor.sse_practice.domain.board_module.comment.dto.CommentGetDto;
 import com.pintor.sse_practice.domain.board_module.comment.entity.Comment;
 import com.pintor.sse_practice.domain.board_module.comment.request.CommentRequest;
 import com.pintor.sse_practice.domain.board_module.comment.service.CommentService;
@@ -18,10 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -47,6 +45,21 @@ public class CommentController {
         );
         resData.add(Link.of(AppConfig.getBaseURL() + "/comments/createComment").withRel("profile"));
         return ResponseEntity.created(linkTo(this.getClass()).slash(comment.getId()).toUri())
+                .body(resData);
+    }
+
+    @GetMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
+    public ResponseEntity getComment(@PathVariable("id") Long id) {
+
+        Comment comment = this.commentService.getCommentById(id);
+
+        ResData resData = ResData.of(
+                ResCode.S_03_02,
+                CommentGetDto.of(comment),
+                linkTo(this.getClass()).slash(comment.getId())
+        );
+        resData.add(Link.of(AppConfig.getBaseURL() + "/comments/getComment").withRel("profile"));
+        return ResponseEntity.ok()
                 .body(resData);
     }
 }
