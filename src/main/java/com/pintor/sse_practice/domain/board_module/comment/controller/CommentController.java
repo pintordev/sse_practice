@@ -7,9 +7,12 @@ import com.pintor.sse_practice.domain.board_module.comment.request.CommentReques
 import com.pintor.sse_practice.domain.board_module.comment.service.CommentService;
 import com.pintor.sse_practice.domain.member_module.member.entity.Member;
 import com.pintor.sse_practice.domain.member_module.member.service.MemberService;
+import com.pintor.sse_practice.global.response.DataModel;
+import com.pintor.sse_practice.global.response.ListDataModel;
 import com.pintor.sse_practice.global.response.ResCode;
 import com.pintor.sse_practice.global.response.ResData;
 import com.pintor.sse_practice.global.util.AppConfig;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.Link;
@@ -20,6 +23,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -59,6 +64,22 @@ public class CommentController {
                 linkTo(this.getClass()).slash(comment.getId())
         );
         resData.add(Link.of(AppConfig.getBaseURL() + "/comments/getComment").withRel("profile"));
+        return ResponseEntity.ok()
+                .body(resData);
+    }
+
+    @GetMapping(consumes = MediaType.ALL_VALUE)
+    public ResponseEntity getComments(@RequestParam("boardId") Long boardId,
+                                      HttpServletRequest request) {
+
+        List<DataModel> comment = this.commentService.getCommentsByBoard(boardId);
+
+        ResData resData = ResData.of(
+                ResCode.S_03_03,
+                ListDataModel.of(comment),
+                linkTo(this.getClass()).slash(request.getQueryString() != null ? "?%s".formatted(request.getQueryString()) : "")
+        );
+        resData.add(Link.of(AppConfig.getBaseURL() + "/comments/getComments").withRel("profile"));
         return ResponseEntity.ok()
                 .body(resData);
     }

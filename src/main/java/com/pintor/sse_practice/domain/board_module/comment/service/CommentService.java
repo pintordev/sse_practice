@@ -1,12 +1,15 @@
 package com.pintor.sse_practice.domain.board_module.comment.service;
 
+import com.pintor.sse_practice.domain.board_module.board.entity.Board;
 import com.pintor.sse_practice.domain.board_module.board.repository.BoardRepository;
 import com.pintor.sse_practice.domain.board_module.board.service.BoardService;
+import com.pintor.sse_practice.domain.board_module.comment.dto.CommentGetDto;
 import com.pintor.sse_practice.domain.board_module.comment.entity.Comment;
 import com.pintor.sse_practice.domain.board_module.comment.repository.CommentRepository;
 import com.pintor.sse_practice.domain.board_module.comment.request.CommentRequest;
 import com.pintor.sse_practice.domain.member_module.member.entity.Member;
 import com.pintor.sse_practice.global.errors.exception.ApiResponseException;
+import com.pintor.sse_practice.global.response.DataModel;
 import com.pintor.sse_practice.global.response.ResCode;
 import com.pintor.sse_practice.global.response.ResData;
 import com.pintor.sse_practice.global.util.AppConfig;
@@ -15,6 +18,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Transactional(readOnly = true)
 @Service
@@ -108,5 +116,15 @@ public class CommentService {
                             )
                     );
                 });
+    }
+
+    public List<DataModel> getCommentsByBoard(Long boardId) {
+
+        Board board = this.boardService.getBoardById(boardId);
+
+        return this.commentRepository.findAllByBoard(board).stream()
+                .filter(comment -> comment.getTag() == null)
+                .map(comment -> DataModel.of(CommentGetDto.of(comment), linkTo(this.getClass()).slash(comment.getId())))
+                .collect(Collectors.toList());
     }
 }

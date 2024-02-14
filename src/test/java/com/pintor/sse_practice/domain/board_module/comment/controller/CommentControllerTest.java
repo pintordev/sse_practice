@@ -6,6 +6,7 @@ import com.pintor.sse_practice.domain.board_module.comment.service.CommentServic
 import com.pintor.sse_practice.global.controller.BaseControllerTest;
 import com.pintor.sse_practice.global.errors.exception.ApiResponseException;
 import com.pintor.sse_practice.global.response.ResCode;
+import com.pintor.sse_practice.global.util.AppConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +17,8 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.stream.Stream;
 
@@ -324,6 +327,45 @@ class CommentControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("data[0].defaultMessage").value("comment that has id is not found"))
                 .andExpect(jsonPath("data[0].rejectedValue").value(id.toString()))
                 .andExpect(jsonPath("_links.index").exists())
+        ;
+    }
+
+    @Test
+    @DisplayName("get:/api/comments - ok, S-03-03")
+    public void getComments_OK() throws Exception {
+
+        // given
+        Long boardId = 1L;
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("boardId", boardId.toString());
+
+        String query = AppConfig.getBaseURL() + ":8080/api/comments" + (AppConfig.getQueryString(params).isBlank() ? "" : "?%s".formatted(AppConfig.getQueryString(params)));
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(get("/api/comments?%s".formatted(AppConfig.getQueryString(params)))
+                        .contentType(MediaType.ALL)
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("status").value("OK"))
+                .andExpect(jsonPath("success").value("true"))
+                .andExpect(jsonPath("code").value("S-03-03"))
+                .andExpect(jsonPath("message").value(ResCode.S_03_03.getMessage()))
+                .andExpect(jsonPath("data.list").exists())
+                .andExpect(jsonPath("data.list[0].id").exists())
+                .andExpect(jsonPath("data.list[0].createDate").exists())
+                .andExpect(jsonPath("data.list[0].modifyDate").exists())
+                .andExpect(jsonPath("data.list[0].content").exists())
+                .andExpect(jsonPath("data.list[0].author").exists())
+                .andExpect(jsonPath("data.list[0].board").value(boardId.toString()))
+                .andExpect(jsonPath("_links.self.href").value(query))
+                .andExpect(jsonPath("_links.profile").exists())
         ;
     }
 }
