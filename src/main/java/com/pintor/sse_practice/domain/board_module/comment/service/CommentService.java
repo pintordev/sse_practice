@@ -120,11 +120,30 @@ public class CommentService {
 
     public List<DataModel> getCommentsByBoard(Long boardId) {
 
+        this.getCommentsByBoardValidate(boardId);
+
         Board board = this.boardService.getBoardById(boardId);
 
         return this.commentRepository.findAllByBoard(board).stream()
                 .filter(comment -> comment.getTag() == null)
                 .map(comment -> DataModel.of(CommentGetDto.of(comment), linkTo(this.getClass()).slash(comment.getId())))
                 .collect(Collectors.toList());
+    }
+
+    private void getCommentsByBoardValidate(Long boardId) {
+
+        Errors errors = AppConfig.getMockErrors("comment");
+
+        if (!this.boardRepository.existsById(boardId)) {
+
+            errors.reject("not found", new Object[]{boardId}, "board that has id requested for comments is not found");
+
+            throw new ApiResponseException(
+                    ResData.of(
+                            ResCode.F_03_03_01,
+                            errors
+                    )
+            );
+        }
     }
 }

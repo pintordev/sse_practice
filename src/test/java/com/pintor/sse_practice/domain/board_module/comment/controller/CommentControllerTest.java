@@ -368,4 +368,39 @@ class CommentControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.profile").exists())
         ;
     }
+
+    @Test
+    @DisplayName("get:/api/comments - not found board not found, F-03-03-01")
+    public void getComments_NotFound_BoardNotFound() throws Exception {
+
+        // given
+        Long boardId = this.boardService.count() + 1;
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("boardId", boardId.toString());
+
+        String query = AppConfig.getBaseURL() + ":8080/api/comments" + (AppConfig.getQueryString(params).isBlank() ? "" : "?%s".formatted(AppConfig.getQueryString(params)));
+
+        // when
+        ResultActions resultActions = this.mockMvc
+                .perform(get("/api/comments?%s".formatted(AppConfig.getQueryString(params)))
+                        .contentType(MediaType.ALL)
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("status").value("NOT_FOUND"))
+                .andExpect(jsonPath("success").value("false"))
+                .andExpect(jsonPath("code").value("F-03-03-01"))
+                .andExpect(jsonPath("message").value(ResCode.F_03_03_01.getMessage()))
+                .andExpect(jsonPath("data[0].objectName").value("comment"))
+                .andExpect(jsonPath("data[0].code").value("not found"))
+                .andExpect(jsonPath("data[0].defaultMessage").value("board that has id requested for comments is not found"))
+                .andExpect(jsonPath("data[0].rejectedValue").value(boardId.toString()))
+                .andExpect(jsonPath("_links.index").exists())
+        ;
+    }
 }
